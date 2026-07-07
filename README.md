@@ -4,6 +4,8 @@
 
 In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent creature. You are blind to the path ahead—only by emitting tactile **sonar ping waves** can you temporarily reveal the geometry of the obstacles and walls around you. However, noise attracts danger: the echoes will alert lurking predators that will actively chase you. Collect glowing energy orbs to survive, and evolve your creature's capabilities in the shop.
 
+**Screen Recording Link**: [Game Play Video](https://drive.google.com/file/d/1zkBf7vps6bdhAH9rsqv_ULr-qwkShOWL/view?usp=sharing)
+
 ---
 
 ## 📸 Screenshots
@@ -70,12 +72,6 @@ npx expo start
    *   *Android*: The QR scanner inside the Expo Go app.
    *   *iOS*: Your native Camera application (it will prompt you to open Expo Go).
 4. The app will bundle and run instantly at a highly-optimized, constant **120 FPS**!
-
----
-
-## 📹 Submission Materials
-*   **GitHub Repository**: [Ink & Echo Codebase](https://github.com/antony-jacob817/Ink-and-Echo.git)
-*   **Screen Recording Link**: [Game Play Video](https://drive.google.com/file/d/1zkBf7vps6bdhAH9rsqv_ULr-qwkShOWL/view?usp=sharing)
 
 ---
 
