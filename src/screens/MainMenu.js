@@ -348,7 +348,7 @@ export default function MainMenu({
         </View>
       )}
 
-      <Text style={styles.footerLeft}>© 2024 DEEP VOID STUDIOS</Text>
+      <Text style={styles.footerLeft}>© 2026 ANTONY JACOB</Text>
       <Text style={styles.footerRight}>v1.01 (Neon-Alpha)</Text>
     </View>
   );
