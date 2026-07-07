@@ -8,12 +8,14 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 
 ## 📸 Screenshots
 <p align="center">
-  <img src="public/menu_screen.png" width="45%" />
-  <img src="public/gameplay_screen.png" width="45%" />
+  <img src="public/Main Menu UI.png" width="45%" />
+  <img src="public/Options UI.png" width="45%" />
+  <img src="public/Gameplay UI 1.png" width="45%" />
+  <img src="public/Gameplay UI 2.png" width="45%" />
 </p>
 <p align="center">
-  <img src="public/biomastery_screen.png" width="45%" />
-  <img src="public/summary_screen.png" width="45%" />
+  <img src="public/Biomastery Shop UI.png" width="45%" />
+  <img src="public/Game Over UI.png" width="45%" />
 </p>
 
 ---
