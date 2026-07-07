@@ -6,9 +6,7 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 
 **Gameplay Video**: [Click Here](https://drive.google.com/file/d/1zkBf7vps6bdhAH9rsqv_ULr-qwkShOWL/view?usp=sharing)
 
-**Android Build (APK)**: [Install Here](https://expo.dev/accounts/antonyjacob817/projects/InkAndEcho/builds/36651724-ed9d-4cc9-b1f6-5c9fe9e01ad1)
-
-<img src="public/eas-qr-code.png" width="130" />
+**Android Build (APK)**: [Install Here](https://expo.dev/accounts/antonyjacob817/projects/InkAndEcho/builds/36651724-ed9d-4cc9-b1f6-5c9fe9e01ad1) &nbsp;&nbsp; <img src="public/eas-qr-code.png" width="120" align="middle" />
 
 ---
 
