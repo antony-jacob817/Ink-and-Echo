@@ -34,6 +34,7 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 *   `expo-font` & `@expo-google-fonts/rubik-glitch` — Used to load the futuristic glitch typography ("JaggedFont") dynamically on startup.
 *   `expo-av` — Used to pre-load and play the atmospheric low-frequency drone tracks and sound effects without disk-read lag.
 *   `expo-haptics` — Used to trigger tactile physical vibration feedback during damage and upgrade events.
+
 ---
 
 ## 🚀 How to Run the Project Locally
