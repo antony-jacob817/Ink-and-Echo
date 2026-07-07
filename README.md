@@ -9,7 +9,7 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 <table>
   <tr>
     <td align="center">
-      <img src="public/eas-qr-code.png" width="130" />
+      <img src="public/eas-qr-code.png" width="130" padding="5"/>
     </td>
     <td>
       <b>Android Build (APK)</b><br/>
