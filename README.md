@@ -6,6 +6,18 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 
 ---
 
+## 📸 Screenshots
+<p align="center">
+  <img src="public/menu_screen.png" width="45%" />
+  <img src="public/gameplay_screen.png" width="45%" />
+</p>
+<p align="center">
+  <img src="public/biomastery_screen.png" width="45%" />
+  <img src="public/summary_screen.png" width="45%" />
+</p>
+
+---
+
 ## 🛠️ Technology Stack
 *   **Programming Language**: JavaScript (JS)
 *   **Framework**: React Native
