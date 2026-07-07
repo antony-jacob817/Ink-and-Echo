@@ -75,7 +75,7 @@ npx expo start
 
 ## 📹 Submission Materials
 *   **GitHub Repository**: [Ink & Echo Codebase](https://github.com/antony-jacob817/Ink-and-Echo.git)
-*   **Screen Recording Link**: *[INSERT YOUR GOOGLE DRIVE OR YOUTUBE UNLISTED VIDEO LINK HERE]*
+*   **Screen Recording Link**: [Game Play Video](https://drive.google.com/file/d/1zkBf7vps6bdhAH9rsqv_ULr-qwkShOWL/view?usp=sharing)
 
 ---
 
