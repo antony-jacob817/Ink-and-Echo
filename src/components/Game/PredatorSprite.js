@@ -1,82 +1,57 @@
-import { StyleSheet, Animated, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Animated } from 'react-native';
 import Svg, { Path, Circle, G } from 'react-native-svg';
 import { Colors } from '../../constants/Colors';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-export default function PredatorSprite({ trackingAnim, isSlowed }) {
-  // Natively interpolate outer glow ring color
-  const outerGlowStroke = trackingAnim.interpolate({
+export default function PredatorSprite({ enemyRef, stalkerAnim, stalkerRot, trackingAnim, isSlowed }) {
+  // Natively interpolate passive group opacity
+  const passiveOpacity = trackingAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [
-      isSlowed ? 'rgba(0, 150, 255, 0.15)' : 'rgba(0, 212, 255, 0.04)',
-      isSlowed ? 'rgba(0, 150, 255, 0.3)' : 'rgba(255, 0, 0, 0.12)'
-    ],
+    outputRange: [1, 0],
   });
 
-  // Natively interpolate mid glow ring color
-  const midGlowStroke = trackingAnim.interpolate({
+  // Natively interpolate tracking group opacity
+  const trackingOpacity = trackingAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [
-      isSlowed ? 'rgba(0, 150, 255, 0.3)' : 'rgba(0, 212, 255, 0.08)',
-      isSlowed ? 'rgba(0, 150, 255, 0.5)' : 'rgba(255, 0, 0, 0.22)'
-    ],
-  });
-
-  // Natively interpolate sharp boundary stroke color
-  const boundaryStroke = trackingAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [
-      isSlowed ? 'rgba(0, 150, 255, 0.5)' : 'rgba(0, 212, 255, 0.18)',
-      isSlowed ? 'rgba(0, 150, 255, 0.8)' : 'rgba(255, 0, 0, 0.55)'
-    ],
-  });
-
-  // Natively interpolate visual zone fill
-  const zoneFill = trackingAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [
-      isSlowed ? 'rgba(0, 150, 255, 0.02)' : 'rgba(0, 212, 255, 0.005)',
-      isSlowed ? 'rgba(0, 150, 255, 0.04)' : 'rgba(255, 0, 0, 0.02)'
-    ],
+    outputRange: [0, 1],
   });
 
   return (
-    <View style={styles.stalkerContainer}>
-      <Svg height="340" width="340" viewBox="0 0 340 340">
-        {/* Layered concentric warning glow rings (Always visible, solid glow) */}
-        
-        {/* 1. Outer broad soft glow ring */}
-        <AnimatedCircle
-          cx="170"
-          cy="170"
-          r="105"
-          stroke={outerGlowStroke}
-          strokeWidth="16"
-          fill="none"
-        />
+    <Animated.View
+      ref={enemyRef}
+      style={[
+        styles.stalkerContainer,
+        {
+          transform: [
+            { translateX: 0 },
+            { translateY: 0 },
+            { rotate: '0deg' }
+          ],
+        },
+      ]}
+    >
+      {/* 1. Passive Concentric Rings Group Overlay */}
+      <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: passiveOpacity }]} pointerEvents="none">
+        <Svg height="340" width="340" viewBox="0 0 340 340">
+          <Circle cx="170" cy="170" r="105" stroke={isSlowed ? 'rgba(0, 150, 255, 0.15)' : 'rgba(0, 212, 255, 0.04)'} strokeWidth="16" fill="none" />
+          <Circle cx="170" cy="170" r="105" stroke={isSlowed ? 'rgba(0, 150, 255, 0.3)' : 'rgba(0, 212, 255, 0.08)'} strokeWidth="6" fill="none" />
+          <Circle cx="170" cy="170" r="105" stroke={isSlowed ? 'rgba(0, 150, 255, 0.5)' : 'rgba(0, 212, 255, 0.18)'} strokeWidth="1.5" fill={isSlowed ? 'rgba(0, 150, 255, 0.02)' : 'rgba(0, 212, 255, 0.005)'} />
+        </Svg>
+      </Animated.View>
 
-        {/* 2. Mid halo glow ring */}
-        <AnimatedCircle
-          cx="170"
-          cy="170"
-          r="105"
-          stroke={midGlowStroke}
-          strokeWidth="6"
-          fill="none"
-        />
+      {/* 2. Tracking Concentric Rings Group Overlay */}
+      <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: trackingOpacity }]} pointerEvents="none">
+        <Svg height="340" width="340" viewBox="0 0 340 340">
+          <Circle cx="170" cy="170" r="105" stroke={isSlowed ? 'rgba(0, 150, 255, 0.3)' : 'rgba(255, 0, 0, 0.12)'} strokeWidth="16" fill="none" />
+          <Circle cx="170" cy="170" r="105" stroke={isSlowed ? 'rgba(0, 150, 255, 0.5)' : 'rgba(255, 0, 0, 0.22)'} strokeWidth="6" fill="none" />
+          <Circle cx="170" cy="170" r="105" stroke={isSlowed ? 'rgba(0, 150, 255, 0.8)' : 'rgba(255, 0, 0, 0.55)'} strokeWidth="1.5" fill={isSlowed ? 'rgba(0, 150, 255, 0.04)' : 'rgba(255, 0, 0, 0.02)'} />
+        </Svg>
+      </Animated.View>
 
-        {/* 3. Core boundary ring and zone fill */}
-        <AnimatedCircle
-          cx="170"
-          cy="170"
-          r="105"
-          stroke={boundaryStroke}
-          strokeWidth="1.5"
-          fill={zoneFill}
-        />
-
-        {/* Scaled-down fearsome detailed wireframe body & eye (scaled to 70% size around the center) */}
+      {/* 3. Base wireframe body & eye (scaled to 70% size around the center) */}
+      <Svg height="340" width="340" viewBox="0 0 340 340" style={StyleSheet.absoluteFillObject}>
         <G transform="translate(170, 170) scale(0.7) translate(-170, -170)">
           <G stroke={Colors.PURPLE_GLOW} strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round">
             {/* Main Body Triangles (Semi-filled for volumetric depth) */}
@@ -114,7 +89,7 @@ export default function PredatorSprite({ trackingAnim, isSlowed }) {
           <Circle cx="210" cy="156" r="1.5" fill="#FFFFFF" />
         </G>
       </Svg>
-    </View>
+    </Animated.View>
   );
 }
 

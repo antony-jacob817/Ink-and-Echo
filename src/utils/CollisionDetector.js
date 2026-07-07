@@ -40,6 +40,51 @@ function getDistanceToSegment(px, py, x1, y1, x2, y2) {
   return Math.hypot(px - nearestX, py - nearestY);
 }
 
+const PREDATOR_SEGMENTS = [
+  // Head
+  [{ x: 60, y: 0 }, { x: 40, y: -20 }],
+  [{ x: 40, y: -20 }, { x: 10, y: -20 }],
+  [{ x: 60, y: 0 }, { x: 40, y: -8 }], // upper jaw edge
+  [{ x: 60, y: 0 }, { x: 45, y: 12 }], // lower jaw edge
+  [{ x: 45, y: 12 }, { x: 10, y: 0 }],
+  [{ x: 10, y: -20 }, { x: 10, y: 0 }],
+  [{ x: 10, y: -20 }, { x: -15, y: -5 }],
+  [{ x: 10, y: 0 }, { x: -15, y: -5 }],
+
+  // Back / Dorsal Fin
+  [{ x: 10, y: -20 }, { x: -10, y: -35 }],
+  [{ x: -10, y: -35 }, { x: -35, y: -20 }],
+  [{ x: -10, y: -35 }, { x: -20, y: -65 }], // dorsal fin tip
+  [{ x: -20, y: -65 }, { x: -35, y: -30 }], // dorsal fin back
+  [{ x: -35, y: -30 }, { x: -35, y: -20 }],
+
+  // Body Center
+  [{ x: 10, y: -20 }, { x: -35, y: -20 }],
+  [{ x: 10, y: 0 }, { x: -35, y: -20 }],
+  [{ x: 10, y: 0 }, { x: -35, y: 0 }],
+  [{ x: 10, y: 0 }, { x: -15, y: 20 }],
+  
+  // Pectoral Fin / Belly
+  [{ x: 0, y: 20 }, { x: -20, y: 50 }], // pectoral fin front
+  [{ x: -20, y: 50 }, { x: -15, y: 20 }], // pectoral fin back
+  [{ x: -15, y: 20 }, { x: -35, y: 20 }],
+  [{ x: -35, y: 20 }, { x: -35, y: 0 }],
+
+  // Tail Stem
+  [{ x: -35, y: -20 }, { x: -60, y: -7 }],
+  [{ x: -35, y: 0 }, { x: -60, y: -7 }],
+  [{ x: -35, y: 0 }, { x: -60, y: 7 }],
+  [{ x: -35, y: 20 }, { x: -60, y: 7 }],
+
+  // Tail Fin
+  [{ x: -60, y: -7 }, { x: -85, y: -25 }],
+  [{ x: -85, y: -25 }, { x: -70, y: 0 }],
+  [{ x: -60, y: 7 }, { x: -85, y: 25 }],
+  [{ x: -85, y: 25 }, { x: -70, y: 0 }],
+  [{ x: -60, y: -7 }, { x: -70, y: 0 }],
+  [{ x: -60, y: 7 }, { x: -70, y: 0 }]
+];
+
 export const CollisionDetector = {
   checkCircleCollision: (posA, posB, radius) => {
     return Math.hypot(posA.x - posB.x, posA.y - posB.y) < radius;
@@ -124,61 +169,13 @@ export const CollisionDetector = {
     }
 
     const PLAYER_RADIUS = 16;
-    
-    // Exact segments of the new detailed shark/piranha wireframe (relative to 170,170 center)
-    const segments = [
-      // Head
-      [{ x: 60, y: 0 }, { x: 40, y: -20 }],
-      [{ x: 40, y: -20 }, { x: 10, y: -20 }],
-      [{ x: 60, y: 0 }, { x: 40, y: -8 }], // upper jaw edge
-      [{ x: 60, y: 0 }, { x: 45, y: 12 }], // lower jaw edge
-      [{ x: 45, y: 12 }, { x: 10, y: 0 }],
-      [{ x: 10, y: -20 }, { x: 10, y: 0 }],
-      [{ x: 10, y: -20 }, { x: -15, y: -5 }],
-      [{ x: 10, y: 0 }, { x: -15, y: -5 }],
-
-      // Back / Dorsal Fin
-      [{ x: 10, y: -20 }, { x: -10, y: -35 }],
-      [{ x: -10, y: -35 }, { x: -35, y: -20 }],
-      [{ x: -10, y: -35 }, { x: -20, y: -65 }], // dorsal fin tip
-      [{ x: -20, y: -65 }, { x: -35, y: -30 }], // dorsal fin back
-      [{ x: -35, y: -30 }, { x: -35, y: -20 }],
-
-      // Body Center
-      [{ x: 10, y: -20 }, { x: -35, y: -20 }],
-      [{ x: 10, y: 0 }, { x: -35, y: -20 }],
-      [{ x: 10, y: 0 }, { x: -35, y: 0 }],
-      [{ x: 10, y: 0 }, { x: -15, y: 20 }],
-      
-      // Pectoral Fin / Belly
-      [{ x: 0, y: 20 }, { x: -20, y: 50 }], // pectoral fin front
-      [{ x: -20, y: 50 }, { x: -15, y: 20 }], // pectoral fin back
-      [{ x: -15, y: 20 }, { x: -35, y: 20 }],
-      [{ x: -35, y: 20 }, { x: -35, y: 0 }],
-
-      // Tail Stem
-      [{ x: -35, y: -20 }, { x: -60, y: -7 }],
-      [{ x: -35, y: 0 }, { x: -60, y: -7 }],
-      [{ x: -35, y: 0 }, { x: -60, y: 7 }],
-      [{ x: -35, y: 20 }, { x: -60, y: 7 }],
-
-      // Tail Fin
-      [{ x: -60, y: -7 }, { x: -85, y: -25 }],
-      [{ x: -85, y: -25 }, { x: -70, y: 0 }],
-      [{ x: -60, y: 7 }, { x: -85, y: 25 }],
-      [{ x: -85, y: 25 }, { x: -70, y: 0 }],
-      [{ x: -60, y: -7 }, { x: -70, y: 0 }],
-      [{ x: -60, y: 7 }, { x: -70, y: 0 }]
-    ];
-
-    const theta = enemy.rot._value || 0;
+    const theta = enemy.rotationValue || 0;
     const cos = Math.cos(theta);
     const sin = Math.sin(theta);
-
     const scale = 0.7;
 
     // Check distance from playerPos to each of the 31 rotated segment lines
-    for (const seg of segments) {
+    for (const seg of PREDATOR_SEGMENTS) {
       const x1 = seg[0].x * scale;
       const y1 = seg[0].y * scale;
       const x2 = seg[1].x * scale;

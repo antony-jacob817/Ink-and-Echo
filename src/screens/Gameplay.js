@@ -167,15 +167,21 @@ export default function Gameplay({
   const [orbsCollected, setOrbsCollected] = useState(0);
   const orbsCollectedRef = useRef(0);
 
-  const [activePulses, setActivePulses] = useState([]);
+  const pulseRef1 = useRef(null);
+  const pulseRef2 = useRef(null);
+  const pulseRef3 = useRef(null);
+  const pulsesPool = useRef([
+    { active: false, x: 0, y: 0, radiusVal: 0, ref: pulseRef1, revealedElements: new Set() },
+    { active: false, x: 0, y: 0, radiusVal: 0, ref: pulseRef2, revealedElements: new Set() },
+    { active: false, x: 0, y: 0, radiusVal: 0, ref: pulseRef3, revealedElements: new Set() },
+  ]);
   const [activeRays, setActiveRays] = useState([]);
   const [isPulseReady, setIsPulseReady] = useState(true);
   const pulseCooldownAnim = useRef(new Animated.Value(0)).current;
   const pulseCooldownTimeLeft = useRef(0);
   const knockbackTimer = useRef(0);
   const playerRef = useRef(null);
-  const spriteRefs = useRef({});
-  const creatureRotVal = useRef(0);
+  const currentRotRef = useRef(0);
   
   const [lives, setLives] = useState(3);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -278,13 +284,24 @@ export default function Gameplay({
     lastEnemySpawnX.current = 0;
     spawnTurn.current = 0;
 
-    // Reset cooldowns, rays, and pulses
+    // Reset cooldowns, rays, and pulses pool
     pulseCooldownTimeLeft.current = 0;
     pulseCooldownAnim.setValue(0);
     setIsPulseReady(true);
     setActiveRays([]);
-    activePulsesRef.current = [];
-    setActivePulses([]);
+    pulsesPool.current.forEach((pulse) => {
+      pulse.active = false;
+      pulse.radiusVal = 0;
+      pulse.revealedElements.clear();
+      if (pulse.ref && pulse.ref.current) {
+        pulse.ref.current.setNativeProps({
+          style: {
+            transform: [{ scale: 0 }],
+            opacity: 0,
+          }
+        });
+      }
+    });
 
     // Generate initial set of obstacles and orbs ahead of start position
     const initialObs = [];
@@ -393,47 +410,62 @@ export default function Gameplay({
         }
       }
 
-      // Update active sonar pulses manually for perfect pause/resume support
+      // Update active sonar pulses manually from the pre-allocated pool (zero React re-renders!)
       const maxRadius = Math.max(width, height) * 1.2;
       const pulseSpeed = maxRadius / 120; // expands fully over 2 seconds (120 frames)
       
-      activePulsesRef.current.forEach((pulse) => {
+      pulsesPool.current.forEach((pulse) => {
+        if (!pulse.active) return;
+
         pulse.radiusVal += pulseSpeed;
         const scaleVal = pulse.radiusVal / 100;
-        pulse.radius.setValue(scaleVal);
-        
         const opacityVal = Math.max(0, 1 - (pulse.radiusVal / maxRadius));
-        pulse.opacity.setValue(opacityVal);
+
+        // Direct native view style transform (zero bridge updates per frame!)
+        if (pulse.ref && pulse.ref.current) {
+          pulse.ref.current.setNativeProps({
+            style: {
+              transform: [{ scale: scaleVal }],
+              opacity: opacityVal,
+            }
+          });
+        }
 
         // Check radial sweep hit reveals
         obstaclesRef.current.forEach((obs) => {
-          if (pulse.revealedElements.has(obs.id)) return;
+          if (pulse.revealedElements.has(obs.id) || obs.isRevealed) return;
           const geom = CollisionDetector.getVisualGeometry(obs);
           const dx = geom.x - pulse.x;
           const dy = geom.y - pulse.y;
           const dist = Math.hypot(dx, dy);
           if (pulse.radiusVal >= dist) {
             pulse.revealedElements.add(obs.id);
+            obs.isRevealed = true;
             DecayEngine.createRevealSequence(
               obs.opacity,
               150,
               DecayEngine.getDecayDuration(500, afterglowMultiplier)
-            ).start();
+            ).start(() => {
+              obs.isRevealed = false;
+            });
           }
         });
 
         orbsRef.current.forEach((orb) => {
-          if (pulse.revealedElements.has(orb.id)) return;
+          if (pulse.revealedElements.has(orb.id) || orb.isRevealed) return;
           const dx = orb.x - pulse.x;
           const dy = orb.y - pulse.y;
           const dist = Math.hypot(dx, dy);
           if (pulse.radiusVal >= dist) {
             pulse.revealedElements.add(orb.id);
+            orb.isRevealed = true;
             DecayEngine.createRevealSequence(
               orb.opacity,
               150,
               DecayEngine.getDecayDuration(700, afterglowMultiplier)
-            ).start();
+            ).start(() => {
+              orb.isRevealed = false;
+            });
           }
         });
 
@@ -448,14 +480,20 @@ export default function Gameplay({
             enemy.attractedAt = Date.now();
           }
         });
-      });
 
-      // Prune finished pulses
-      const unfinishedPulses = activePulsesRef.current.filter(p => p.radiusVal < maxRadius);
-      if (unfinishedPulses.length !== activePulsesRef.current.length) {
-        activePulsesRef.current = unfinishedPulses;
-        setActivePulses([...unfinishedPulses]);
-      }
+        // Deactivate pulse when max radius is achieved
+        if (pulse.radiusVal >= maxRadius) {
+          pulse.active = false;
+          if (pulse.ref && pulse.ref.current) {
+            pulse.ref.current.setNativeProps({
+              style: {
+                transform: [{ scale: 0 }],
+                opacity: 0,
+              }
+            });
+          }
+        }
+      });
 
       // Distance score tracking (10px = 1m)
       const currentDist = scrollXRef.current / 10;
@@ -515,13 +553,31 @@ export default function Gameplay({
       // Rotate player based on active joystick input direction, preventing turning backward on bounce
       const hasInput = Math.hypot(inputVector.current.x, inputVector.current.y) > 0.15;
       if (hasInput) {
-        creatureRotVal.current = Math.atan2(inputVector.current.y, inputVector.current.x);
+        currentRotRef.current = Math.atan2(inputVector.current.y, inputVector.current.x);
       } else {
         const speed = Math.hypot(velocity.current.x, velocity.current.y);
         // Only update from velocity if moving forward at significant speed to prevent bounce turning
-        if (speed > 0.8 && velocity.current.x > -0.1) {
-          creatureRotVal.current = Math.atan2(velocity.current.y, velocity.current.x);
+        if (speed > 0.8) {
+          const velocityRotation = Math.atan2(velocity.current.y, velocity.current.x);
+          // Check if velocity direction matches scroll movement generally (not bouncing backward)
+          if (velocity.current.x > -0.1) {
+            currentRotRef.current = velocityRotation;
+          }
         }
+      }
+
+      // Direct native view translation & rotation (bypasses JS bridge serialization!)
+      if (playerRef.current) {
+        const finalRot = currentRotRef.current + Math.PI / 2;
+        playerRef.current.setNativeProps({
+          style: {
+            transform: [
+              { translateX: truePos.current.x },
+              { translateY: truePos.current.y },
+              { rotate: `${finalRot}rad` }
+            ]
+          }
+        });
       }
 
       // Calculate speed and update tail extension smoothly via lerp (runs natively!)
@@ -529,20 +585,6 @@ export default function Gameplay({
       const targetTail = Math.min(speed / 4.0, 1.0);
       tailGrowthRef.current += (targetTail - tailGrowthRef.current) * 0.15;
       tailGrowth.setValue(tailGrowthRef.current);
-
-      // Direct Manipulation positioning for buttery smooth 120 FPS movement!
-      if (playerRef.current) {
-        const rotDeg = (creatureRotVal.current * 180 / Math.PI) - 90;
-        playerRef.current.setNativeProps({
-          style: {
-            transform: [
-              { translateX: truePos.current.x },
-              { translateY: truePos.current.y },
-              { rotate: `${rotDeg}deg` }
-            ]
-          }
-        });
-      }
 
       // 2. Procedural Spawning (Alternating obstacles and orbs to ensure they never spawn together)
       if (scrollXRef.current + width * 2.0 > lastSpawnX.current) {
@@ -621,11 +663,14 @@ export default function Gameplay({
           patrolX: scrollXRef.current + width + 200, // Anchor for pacing
           patrolY: spawnY,
           patrolTimeOffset: Math.random() * 10000, // Desynchronize multiple predators
-          rotVal: 0,
-          trackingAnim: new Animated.Value(0), // 0 = passive, 1 = tracking player (Animated natively in SVG)
+          anim: new Animated.ValueXY({ x: scrollXRef.current + width + 200, y: spawnY }),
+          rot: new Animated.Value(0),
+          trackingAnim: new Animated.Value(0), // 0 = passive, 1 = tracking player
           speed: (1.2 + Math.random() * 0.5) * dampenedFinsMultiplier,
           isAttracted: false,
           wasTracking: false,
+          rotationValue: 0,
+          ref: React.createRef(),
         };
         enemiesRef.current.push(newEnemy);
         lastEnemySpawnX.current = scrollXRef.current;
@@ -701,17 +746,20 @@ export default function Gameplay({
         enemy.x += enemy.vx;
         enemy.y += enemy.vy;
 
-        // Direct Manipulation positioning for buttery smooth 120 FPS predator movement!
-        enemy.rotVal = Math.atan2(enemy.vy, enemy.vx);
-        const ref = spriteRefs.current[enemy.id];
-        if (ref) {
-          const rotDeg = enemy.rotVal * 180 / Math.PI;
-          ref.setNativeProps({
+        // Set rotation smoothly facing velocity heading
+        const speedVal = Math.hypot(enemy.vx, enemy.vy);
+        if (speedVal > 0.03) {
+          enemy.rotationValue = Math.atan2(enemy.vy, enemy.vx);
+        }
+
+        // Direct native view translation & rotation (bypasses JS bridge serialization!)
+        if (enemy.ref && enemy.ref.current) {
+          enemy.ref.current.setNativeProps({
             style: {
               transform: [
                 { translateX: enemy.x },
                 { translateY: enemy.y },
-                { rotate: `${rotDeg}deg` }
+                { rotate: `${enemy.rotationValue || 0}rad` }
               ]
             }
           });
@@ -914,21 +962,27 @@ export default function Gameplay({
     pulseCooldownTimeLeft.current = cooldownDuration;
     pulseCooldownAnim.setValue(1);
 
-    const maxRadius = Math.max(width, height) * 1.2;
+    // Find first inactive pulse in static pool
+    const pulse = pulsesPool.current.find(p => !p.active);
+    if (pulse) {
+      pulse.active = true;
+      pulse.x = truePos.current.x;
+      pulse.y = truePos.current.y;
+      pulse.radiusVal = 0;
+      pulse.revealedElements.clear();
 
-    // Spawn expanding sonar circle in ref
-    const newPulse = {
-      id: Date.now(),
-      x: truePos.current.x,
-      y: truePos.current.y,
-      radiusVal: 0,
-      radius: new Animated.Value(0),
-      opacity: new Animated.Value(1),
-      revealedElements: new Set(),
-    };
-
-    activePulsesRef.current.push(newPulse);
-    setActivePulses([...activePulsesRef.current]);
+      // Position the pulse container natively before drawing
+      if (pulse.ref && pulse.ref.current) {
+        pulse.ref.current.setNativeProps({
+          style: {
+            left: pulse.x,
+            top: pulse.y,
+            transform: [{ scale: 0 }],
+            opacity: 1,
+          }
+        });
+      }
+    }
   };
 
   const activateDampenedFin = () => {
@@ -980,51 +1034,28 @@ export default function Gameplay({
 
   // Inline element memoization to bypass React 19 / Babel preset React.memo object transform crash
   const playerSpriteElement = useMemo(() => (
-    <Animated.View
-      ref={playerRef}
-      style={[
-        styles.playerContainer,
-        {
-          opacity: blinkAnim,
-        }
-      ]}
-    >
-      <PlayerSprite
-        tailGrowth={tailGrowth}
-        upgrades={upgrades}
-        blinkAnim={blinkAnim}
-        breathingAnim={breathingAnim}
-        emitAnim1={emitAnim1}
-        emitAnim2={emitAnim2}
-        emitAnim3={emitAnim3}
-        emitAnim4={emitAnim4}
-        particles1={particles1}
-        particles2={particles2}
-        particles3={particles3}
-        particles4={particles4}
-      />
-    </Animated.View>
-  ), [upgrades, blinkAnim, breathingAnim, emitAnim1, emitAnim2, emitAnim3, emitAnim4, particles1, particles2, particles3, particles4, tailGrowth]);
+    <PlayerSprite
+      playerRef={playerRef}
+      creaturePos={creaturePos}
+      creatureRot={creatureRot}
+      tailGrowth={tailGrowth}
+      upgrades={upgrades}
+      blinkAnim={blinkAnim}
+      breathingAnim={breathingAnim}
+      emitAnim1={emitAnim1}
+      emitAnim2={emitAnim2}
+      emitAnim3={emitAnim3}
+      emitAnim4={emitAnim4}
+      particles1={particles1}
+      particles2={particles2}
+      particles3={particles3}
+      particles4={particles4}
+    />
+  ), [creaturePos, creatureRot, tailGrowth, upgrades, blinkAnim, breathingAnim, emitAnim1, emitAnim2, emitAnim3, emitAnim4, particles1, particles2, particles3, particles4]);
 
   const enemiesElement = useMemo(() => (
     enemies.map((enemy) => (
-      <View
-        key={enemy.id}
-        ref={ref => { spriteRefs.current[enemy.id] = ref; }}
-        style={[
-          styles.stalkerContainer,
-          {
-            // Initial render position before gameLoop setNativeProps styles update
-            transform: [
-              { translateX: enemy.x },
-              { translateY: enemy.y },
-              { rotate: `${(enemy.rotVal || 0) * (180 / Math.PI)}deg` }
-            ]
-          }
-        ]}
-      >
-        <PredatorSprite trackingAnim={enemy.trackingAnim} isSlowed={isEnemySlowed} />
-      </View>
+      <PredatorSprite key={enemy.id} enemyRef={enemy.ref} stalkerAnim={enemy.anim} stalkerRot={enemy.rot} trackingAnim={enemy.trackingAnim} isSlowed={isEnemySlowed} />
     ))
   ), [enemies, isEnemySlowed]);
 
@@ -1091,34 +1122,66 @@ export default function Gameplay({
         {/* Predators absolute positioned in the gameWorld */}
         {enemiesElement}
 
-        {/* --- ACTIVE SONAR PULSES (Rendered inside gameWorld to inherit translation natively!) --- */}
-        {activePulses.map((pulse) => (
-          <Animated.View
-            key={pulse.id}
-            style={[
-              styles.pulseContainer,
-              {
-                left: pulse.x,
-                top: pulse.y,
-                opacity: pulse.opacity,
-                transform: [
-                  {
-                    scale: pulse.radius
-                  }
-                ]
-              }
-            ]}
-          >
-            <Svg height="200" width="200" viewBox="-100 -100 200 200">
-              {/* Primary Ring */}
-              <Circle cx="0" cy="0" r="98" stroke={Colors.CYAN} strokeWidth="1.5" fill="none" />
-              {/* Secondary Ripple */}
-              <Circle cx="0" cy="0" r="84" stroke={Colors.CYAN} strokeWidth="1.0" fill="none" opacity="0.5" />
-              {/* Tertiary Ripple */}
-              <Circle cx="0" cy="0" r="70" stroke={Colors.CYAN} strokeWidth="0.8" fill="none" opacity="0.2" />
-            </Svg>
-          </Animated.View>
-        ))}
+        {/* --- ACTIVE SONAR PULSES (Static Pool - Zero Mounting/Unmounting!) --- */}
+        <Animated.View
+          ref={pulseRef1}
+          style={[
+            styles.pulseContainer,
+            {
+              left: 0,
+              top: 0,
+              opacity: 0,
+              transform: [{ scale: 0 }]
+            }
+          ]}
+          pointerEvents="none"
+        >
+          <Svg height="200" width="200" viewBox="-100 -100 200 200">
+            <Circle cx="0" cy="0" r="98" stroke={Colors.CYAN} strokeWidth="1.5" fill="none" />
+            <Circle cx="0" cy="0" r="84" stroke={Colors.CYAN} strokeWidth="1.0" fill="none" opacity="0.5" />
+            <Circle cx="0" cy="0" r="70" stroke={Colors.CYAN} strokeWidth="0.8" fill="none" opacity="0.2" />
+          </Svg>
+        </Animated.View>
+
+        <Animated.View
+          ref={pulseRef2}
+          style={[
+            styles.pulseContainer,
+            {
+              left: 0,
+              top: 0,
+              opacity: 0,
+              transform: [{ scale: 0 }]
+            }
+          ]}
+          pointerEvents="none"
+        >
+          <Svg height="200" width="200" viewBox="-100 -100 200 200">
+            <Circle cx="0" cy="0" r="98" stroke={Colors.CYAN} strokeWidth="1.5" fill="none" />
+            <Circle cx="0" cy="0" r="84" stroke={Colors.CYAN} strokeWidth="1.0" fill="none" opacity="0.5" />
+            <Circle cx="0" cy="0" r="70" stroke={Colors.CYAN} strokeWidth="0.8" fill="none" opacity="0.2" />
+          </Svg>
+        </Animated.View>
+
+        <Animated.View
+          ref={pulseRef3}
+          style={[
+            styles.pulseContainer,
+            {
+              left: 0,
+              top: 0,
+              opacity: 0,
+              transform: [{ scale: 0 }]
+            }
+          ]}
+          pointerEvents="none"
+        >
+          <Svg height="200" width="200" viewBox="-100 -100 200 200">
+            <Circle cx="0" cy="0" r="98" stroke={Colors.CYAN} strokeWidth="1.5" fill="none" />
+            <Circle cx="0" cy="0" r="84" stroke={Colors.CYAN} strokeWidth="1.0" fill="none" opacity="0.5" />
+            <Circle cx="0" cy="0" r="70" stroke={Colors.CYAN} strokeWidth="0.8" fill="none" opacity="0.2" />
+          </Svg>
+        </Animated.View>
 
         {/* --- ACTIVE FREEZE RAYS (Rendered inside gameWorld to inherit translation natively!) --- */}
         {activeRays.map((ray) => (
@@ -1486,27 +1549,5 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: 'bold',
     letterSpacing: 1.5,
-  },
-  playerContainer: {
-    position: 'absolute',
-    width: 46,
-    height: 46,
-    marginLeft: -23,
-    marginTop: -23,
-    zIndex: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    pointerEvents: 'none',
-  },
-  stalkerContainer: {
-    position: 'absolute',
-    width: 340,
-    height: 340,
-    marginLeft: -170,
-    marginTop: -170,
-    zIndex: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    pointerEvents: 'none',
   },
 });

@@ -4,6 +4,7 @@ import Svg, { Path, Circle, Ellipse } from 'react-native-svg';
 import { Colors } from '../../constants/Colors';
 
 export default function PlayerSprite({
+  playerRef,
   creaturePos,
   creatureRot,
   tailGrowth, // Animated.Value driven natively by creature speed in Gameplay loop
@@ -76,19 +77,14 @@ export default function PlayerSprite({
       This ensures the rotation pivot matches the center of the body perfectly.
     */
     <Animated.View
+      ref={playerRef}
       style={[
         styles.playerContainer,
         {
           transform: [
-            { translateX: creaturePos.x },
-            { translateY: creaturePos.y },
-            {
-              // Adjusted rotation by 90 degrees since default drawing is vertical (pointing up)
-              rotate: creatureRot.interpolate({
-                inputRange: [-Math.PI, Math.PI],
-                outputRange: ['-90deg', '270deg'],
-              }),
-            },
+            { translateX: 0 },
+            { translateY: 0 },
+            { rotate: '0deg' }
           ],
         },
       ]}
