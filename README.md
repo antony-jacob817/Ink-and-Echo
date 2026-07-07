@@ -5,6 +5,7 @@
 In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent creature. You are blind to the path ahead—only by emitting tactile **sonar ping waves** can you temporarily reveal the geometry of the obstacles and walls around you. However, noise attracts danger: the echoes will alert lurking predators that will actively chase you. Collect glowing energy orbs to survive, and evolve your creature's capabilities in the shop.
 
 **Gameplay Video**: [Click Here](https://drive.google.com/file/d/1zkBf7vps6bdhAH9rsqv_ULr-qwkShOWL/view?usp=sharing)
+**Android Build (APK)**: [Install Here](https://expo.dev/accounts/antonyjacob817/projects/InkAndEcho/builds/36651724-ed9d-4cc9-b1f6-5c9fe9e01ad1)
 
 ---
 
