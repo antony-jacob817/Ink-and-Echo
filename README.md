@@ -6,18 +6,9 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 
 **Gameplay Video**: [Click Here](https://drive.google.com/file/d/1zkBf7vps6bdhAH9rsqv_ULr-qwkShOWL/view?usp=sharing)
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="public/eas-qr-code.png" width="130" padding="5"/>
-    </td>
-    <td>
-      <b>Android Build (APK)</b><br/>
-      👉 <a href="https://expo.dev/accounts/antonyjacob817/projects/InkAndEcho/builds/36651724-ed9d-4cc9-b1f6-5c9fe9e01ad1"><b>Install Here</b></a> <br/><br/>
-      <i>Scan the QR code with your mobile camera or click the link to go to the Expo build download page.</i>
-    </td>
-  </tr>
-</table>
+**Android Build (APK)**: [Install Here](https://expo.dev/accounts/antonyjacob817/projects/InkAndEcho/builds/36651724-ed9d-4cc9-b1f6-5c9fe9e01ad1)
+
+<img src="public/eas-qr-code.png" width="130" />
 
 ---
 
