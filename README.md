@@ -14,7 +14,7 @@ Ensure you have **Node.js** (v18+) and **npm** installed on your computer.
 ### 2. Clone the Repository
 Clone this repository to your local machine:
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/InkAndEcho.git
+git clone https://github.com/antony-jacob817/Ink-and-Echo.git
 cd InkAndEcho
 ```
 
@@ -38,9 +38,9 @@ npx expo start
 
 ---
 
-## 📹 Submission Materials (Path B)
+## 📹 Submission Materials
 
-*   **GitHub Repository**: [Ink & Echo Codebase](https://github.com/YOUR_GITHUB_USERNAME/InkAndEcho)
+*   **GitHub Repository**: [Ink & Echo Codebase](https://github.com/antony-jacob817/Ink-and-Echo.git)
 *   **Screen Recording Link**: *[INSERT YOUR GOOGLE DRIVE OR YOUTUBE UNLISTED VIDEO LINK HERE]*
 
 ---
