@@ -6,13 +6,17 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 
 **Gameplay Video**: [Click Here](https://drive.google.com/file/d/1zkBf7vps6bdhAH9rsqv_ULr-qwkShOWL/view?usp=sharing)
 
+---
+
+## 📱 Download & Test the App Instantly
+
+You can install the live standalone Android application (.APK) directly onto your device using either option below:
+
 ### Option A: Direct Download Link
 👉 **[Click Here to Download the Ink & Echo APK](https://expo.dev/accounts/antonyjacob817/projects/InkAndEcho/builds/36651724-ed9d-4cc9-b1f6-5c9fe9e01ad1)**
 
 ### Option B: Scan QR Code
-Scan this QR code with your phone's camera to instantly download the installer file:
-
-![Ink and Echo Installation QR Code](public/eas-qr-code.png)
+Scan this QR code with your phone's camera to instantly download the installer file: &nbsp;&nbsp; <img src="public/eas-qr-code.png" width="120" align="middle" />
 
 ---
 
