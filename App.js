@@ -35,10 +35,22 @@ export default function App() {
     FeedbackManager.loadSounds();
   }, []);
 
-  // Sync settings with FeedbackManager
+  // Master sound and background music synchronization hook
   useEffect(() => {
     FeedbackManager.setSoundEnabled(soundEnabled);
-  }, [soundEnabled]);
+    if (soundEnabled) {
+      if (gameState === 'MENU' || gameState === 'BIOMASTERY' || gameState === 'LEVEL_SUMMARY') {
+        FeedbackManager.startMenuMusic();
+        FeedbackManager.stopAmbience();
+      } else if (gameState === 'GAMEPLAY') {
+        FeedbackManager.stopMenuMusic();
+        FeedbackManager.startAmbience();
+      }
+    } else {
+      FeedbackManager.stopMenuMusic();
+      FeedbackManager.stopAmbience();
+    }
+  }, [gameState, soundEnabled]);
 
   useEffect(() => {
     FeedbackManager.setHapticsEnabled(hapticsEnabled);

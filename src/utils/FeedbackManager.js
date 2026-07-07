@@ -9,6 +9,9 @@ let currentVolume = 0.5;
 let pingSound = null;
 let shatterSound = null;
 let ambientSoundInstance = null;
+let menuMusicSound = null;
+let collectSound = null;
+let purchaseSound = null;
 
 export const FeedbackManager = {
   loadSounds: async () => {
@@ -32,6 +35,25 @@ export const FeedbackManager = {
         );
         ambientSoundInstance = sound;
       }
+      if (!menuMusicSound) {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/menu_music.mp3'),
+          { isLooping: true, volume: currentVolume }
+        );
+        menuMusicSound = sound;
+      }
+      if (!collectSound) {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/orb_collect.mp3')
+        );
+        collectSound = sound;
+      }
+      if (!purchaseSound) {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/purchase_success.mp3')
+        );
+        purchaseSound = sound;
+      }
     } catch (e) {
       console.warn("FeedbackManager: Failed to pre-load audio assets.", e.message);
     }
@@ -41,6 +63,7 @@ export const FeedbackManager = {
     soundEnabled = enabled;
     if (!enabled) {
       FeedbackManager.stopAmbience();
+      FeedbackManager.stopMenuMusic();
     }
   },
 
@@ -55,6 +78,13 @@ export const FeedbackManager = {
         await ambientSoundInstance.setVolumeAsync(val);
       } catch (error) {
         console.warn("FeedbackManager: Failed to set volume on ambience.", error.message);
+      }
+    }
+    if (menuMusicSound) {
+      try {
+        await menuMusicSound.setVolumeAsync(val);
+      } catch (error) {
+        console.warn("FeedbackManager: Failed to set volume on menu music.", error.message);
       }
     }
   },
@@ -124,6 +154,77 @@ export const FeedbackManager = {
       }
     } catch (error) {
       console.warn("FeedbackManager: Failed to stop ambient audio.", error.message);
+    }
+  },
+
+  startMenuMusic: async () => {
+    if (!soundEnabled) return;
+    try {
+      if (menuMusicSound) {
+        const status = await menuMusicSound.getStatusAsync();
+        if (status && status.isPlaying) {
+          return; // Already playing, continue seamlessly!
+        }
+        await menuMusicSound.setVolumeAsync(currentVolume);
+        await menuMusicSound.playAsync();
+      } else {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/menu_music.mp3'),
+          { isLooping: true, volume: currentVolume }
+        );
+        menuMusicSound = sound;
+        await menuMusicSound.playAsync();
+      }
+    } catch (error) {
+      console.warn("FeedbackManager: Failed to start menu music.", error.message);
+    }
+  },
+
+  stopMenuMusic: async () => {
+    try {
+      if (menuMusicSound) {
+        await menuMusicSound.pauseAsync();
+      }
+    } catch (error) {
+      console.warn("FeedbackManager: Failed to stop menu music.", error.message);
+    }
+  },
+
+  playCollectSound: async () => {
+    if (!soundEnabled) return;
+    try {
+      if (collectSound) {
+        await collectSound.setPositionAsync(0);
+        await collectSound.setVolumeAsync(currentVolume * 0.25);
+        await collectSound.playAsync();
+      } else {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/orb_collect.mp3')
+        );
+        await sound.setVolumeAsync(currentVolume * 0.25);
+        await sound.playAsync();
+      }
+    } catch (error) {
+      console.warn("FeedbackManager: Failed to play collect sound.", error.message);
+    }
+  },
+
+  playUpgradeSound: async () => {
+    if (!soundEnabled) return;
+    try {
+      if (purchaseSound) {
+        await purchaseSound.setPositionAsync(0);
+        await purchaseSound.setVolumeAsync(currentVolume);
+        await purchaseSound.playAsync();
+      } else {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/purchase_success.mp3')
+        );
+        await sound.setVolumeAsync(currentVolume);
+        await sound.playAsync();
+      }
+    } catch (error) {
+      console.warn("FeedbackManager: Failed to play upgrade sound.", error.message);
     }
   },
 

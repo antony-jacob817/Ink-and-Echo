@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, useWindowDimensions, BackHandler, Animated } from 'react-native';
 import Svg, { Polygon, Path, Line, Circle, G } from 'react-native-svg';
 import { Colors } from '../constants/Colors';
+import { FeedbackManager } from '../utils/FeedbackManager';
 
 const MenuButton = ({ title, subtitle, locked, onPress }) => (
   <TouchableOpacity style={styles.buttonWrapper} onPress={onPress} activeOpacity={0.7}>
@@ -116,6 +117,11 @@ export default function MainMenu({
     }
   }, [showOptions, soundEnabled, hapticsEnabled, volume]);
 
+  const handleVolumeChange = (newVal) => {
+    setLocalVolume(newVal);
+    FeedbackManager.setVolume(newVal); // live audio feedback!
+  };
+
   const handleSave = () => {
     onToggleSound(localSound);
     onToggleHaptics(localHaptics);
@@ -124,6 +130,7 @@ export default function MainMenu({
   };
 
   const handleClose = () => {
+    FeedbackManager.setVolume(volume); // Revert live feedback back to saved value
     setShowOptions(false);
   };
 
@@ -317,7 +324,7 @@ export default function MainMenu({
           {localSound && (
             <View style={styles.optionRow}>
               <Text style={styles.optionLabel}>VOLUME LEVEL</Text>
-              <VolumeSlider volume={localVolume} onVolumeChange={setLocalVolume} />
+              <VolumeSlider volume={localVolume} onVolumeChange={handleVolumeChange} />
             </View>
           )}
 

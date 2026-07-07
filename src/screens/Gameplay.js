@@ -153,6 +153,11 @@ export default function Gameplay({
     }
   }, [showPauseOptions, soundEnabled, hapticsEnabled, volume]);
 
+  const handleVolumeChange = (newVal) => {
+    setLocalVolume(newVal);
+    FeedbackManager.setVolume(newVal); // live audio feedback!
+  };
+
   const handleSavePauseSettings = () => {
     onToggleSound(localSound);
     onToggleHaptics(localHaptics);
@@ -161,6 +166,7 @@ export default function Gameplay({
   };
 
   const handleClosePauseSettings = () => {
+    FeedbackManager.setVolume(volume); // Revert live feedback back to saved value
     setShowPauseOptions(false);
   };
 
@@ -819,7 +825,7 @@ export default function Gameplay({
         if (CollisionDetector.checkCircleCollision(truePos.current, orb, orb.hitRadius + 22)) {
           // Collect orb!
           FeedbackManager.triggerHaptic('light');
-          FeedbackManager.playPulseSound(); // play collect sound
+          FeedbackManager.playCollectSound(); // play collect sound
           
           if (orb.type === 'fin') {
             finOrbsCollectedRef.current += 1;
@@ -1341,11 +1347,10 @@ export default function Gameplay({
                   </Text>
                 </TouchableOpacity>
               </View>
-
               {localSound && (
                 <View style={styles.pauseOptionRow}>
                   <Text style={styles.pauseOptionLabel}>VOLUME LEVEL</Text>
-                  <VolumeSlider volume={localVolume} onVolumeChange={setLocalVolume} />
+                  <VolumeSlider volume={localVolume} onVolumeChange={handleVolumeChange} />
                 </View>
               )}
 

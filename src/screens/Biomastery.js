@@ -4,6 +4,7 @@ import Svg, { Path, Circle, Line, Ellipse, Rect, G, Text as SvgText } from 'reac
 import { Colors } from '../constants/Colors';
 import { UpgradeTiers } from '../constants/UpgradeTiers';
 import UpgradeCard from '../components/UI/UpgradeCard';
+import { FeedbackManager } from '../utils/FeedbackManager';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
@@ -101,6 +102,8 @@ export default function Biomastery({
 
   const handlePurchase = () => {
     if (canAfford) {
+      FeedbackManager.triggerHaptic('heavy');
+      FeedbackManager.playUpgradeSound();
       onBuyUpgrade(selectedUpgradeKey, nextLevelCost);
     }
   };
