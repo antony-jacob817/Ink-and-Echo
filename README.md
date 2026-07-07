@@ -11,6 +11,13 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 *   **Framework**: React Native
 *   **Build Tool / Environment**: Expo (using Expo Go for instant testing)
 
+### 📦 Key Libraries & Dependencies
+*   `react-native-svg` — Used to render high-performance, scale-independent vector graphics (like the player, obstacles, and active sonar ripples).
+*   `expo-font` & `@expo-google-fonts/rubik-glitch` — Used to load the futuristic glitch typography ("JaggedFont") dynamically on startup.
+*   `expo-av` — Used to pre-load and play the atmospheric low-frequency drone tracks and sound effects without disk-read lag.
+*   `expo-haptics` — Used to trigger tactile physical vibration feedback during damage and upgrade events.
+*   `eas-cli` (`npm install --global eas-cli`) — Used to configure (`eas build:configure`) and trigger cloud APK/AAB builds for release testing.
+
 ---
 
 ## 🚀 How to Run the Project Locally
