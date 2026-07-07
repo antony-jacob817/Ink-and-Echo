@@ -12,10 +12,7 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 
 Install the standalone Android application (.APK) directly onto your device: **[Download APK](https://expo.dev/accounts/antonyjacob817/projects/InkAndEcho/builds/36651724-ed9d-4cc9-b1f6-5c9fe9e01ad1)**
 
-<div style="display: flex; align-items: center; gap: 20px; margin-top: 20px;">
-  <span>Alternatively, scan the QR code using your mobile device's camera:</span>
-  <img src="public/eas-qr-code.png" width="130" alt="Ink & Echo Installation QR Code" />
-</div>
+Alternatively, scan the QR code below using your mobile device's camera: &nbsp;&nbsp; <img src="public/eas-qr-code.png" width="130" alt="Ink & Echo Installation QR Code" />
 
 ---
 
