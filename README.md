@@ -10,19 +10,11 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 
 ## 📱 Download & Test the App Instantly
 
-> **Note:** This is a live standalone Android application (.APK). You can install it directly onto your physical Android device using either option below.
+Get the live standalone Android application (.APK) directly onto your device using either option below:
 
-### 🔗 Option A: Direct Download Link
-👉 **[Click Here to Download the Ink & Echo APK](https://expo.dev/accounts/antonyjacob817/projects/InkAndEcho/builds/36651724-ed9d-4cc9-b1f6-5c9fe9e01ad1)**
-
-### 📸 Option B: Scan QR Code
-Scan this QR code with your phone's camera to instantly download the installer file:
-
-<br>
-
-<img src="public/eas-qr-code.png" width="140" alt="Ink & Echo QR Code" />
-
-<br>
+| 📥 Option A: Direct Link | 📸 Option B: Scan QR Code |
+| :--- | :--- |
+| **Want to download directly?**<br><br>Click the link below to get the official installer file straight to your device:<br><br>👉 **[Download the Ink & Echo APK](https://expo.dev/accounts/antonyjacob817/projects/InkAndEcho/builds/36651724-ed9d-4cc9-b1f6-5c9fe9e01ad1)** | **Prefer scanning?**<br><br>Scan this QR code with your phone's camera to trigger the instant download:<br><br> <img src="public/eas-qr-code.png" width="130" alt="Ink & Echo QR Code" /> |
 
 ---
 
