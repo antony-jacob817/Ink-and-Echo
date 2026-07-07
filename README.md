@@ -9,16 +9,16 @@ In the deep, pitch-black abyssal ocean, you guide a delicate bioluminescent crea
 ## 📸 Screenshots
 <table align="center">
   <tr>
-    <td align="center"><img src="public/Main Menu UI.png" width="350" /><br/><b>Main Menu UI.png</b></td>
-    <td align="center"><img src="public/Options UI.png" width="350" /><br/><b>Options UI.png</b></td>
+    <td align="center"><img src="public/Main Menu UI.png" width="350" /><br/><b>Main Menu UI</b></td>
+    <td align="center"><img src="public/Options UI.png" width="350" /><br/><b>Options UI</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="public/Gameplay UI 1.png" width="350" /><br/><b>Gameplay UI 1.png</b></td>
-    <td align="center"><img src="public/Gameplay UI 2.png" width="350" /><br/><b>Gameplay UI 2.png</b></td>
+    <td align="center"><img src="public/Gameplay UI 1.png" width="350" /><br/><b>Gameplay UI 1</b></td>
+    <td align="center"><img src="public/Gameplay UI 2.png" width="350" /><br/><b>Gameplay UI 2</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="public/Game Over UI.png" width="350" /><br/><b>Game Over UI.png</b></td>
-    <td align="center"><img src="public/Biomastery Shop UI.png" width="350" /><br/><b>Biomastery Shop UI.png</b></td>
+    <td align="center"><img src="public/Game Over UI.png" width="350" /><br/><b>Game Over UI</b></td>
+    <td align="center"><img src="public/Biomastery Shop UI.png" width="350" /><br/><b>Biomastery Shop UI</b></td>
   </tr>
 </table>
 
