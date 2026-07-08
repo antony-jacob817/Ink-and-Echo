@@ -21,7 +21,7 @@ Alternatively, scan the QR code below using your mobile device's camera:
 ## 📸 Screenshots
 <table align="center">
   <tr>
-    <td align="center"><img src="public/Main Menu UI.png" width="350" /><br/><b>Main Menu UI</b></td>
+    <td align="center"><img src="public/cover.png" width="350" /><br/><b>Main Menu UI</b></td>
     <td align="center"><img src="public/Options UI.png" width="350" /><br/><b>Options UI</b></td>
   </tr>
   <tr>
